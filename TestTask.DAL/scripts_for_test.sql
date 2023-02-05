@@ -13,8 +13,8 @@ course_name NVARCHAR(50) NOT NULL
 
 CREATE TABLE study_groups(
 id INT PRIMARY KEY IDENTITY,
-study_group_name NVARCHAR(50) NOT NULL
-teacher_id INT REFERENCES teachers(id) ON DELETE SET NULL ON UPDATE CASCADE
+study_group_name NVARCHAR(50) NOT NULL,
+teacher_id INT REFERENCES teachers(id) ON DELETE SET NULL ON UPDATE CASCADE,
 course_id INT REFERENCES courses(id) ON DELETE SET NULL ON UPDATE CASCADE
 )
 
@@ -35,49 +35,70 @@ CREATE TABLE study_groups_employees(
 id INT PRIMARY KEY IDENTITY,
 study_group_id INT REFERENCES study_groups(id) ON DELETE CASCADE ON UPDATE CASCADE,
 employee_id INT REFERENCES employers(id) ON DELETE CASCADE ON UPDATE CASCADE
+);
 
-)
+go
+CREATE VIEW groups_view AS
+SELECT        dbo.study_groups.study_group_name, dbo.teachers.fio AS teacher_fio, COUNT(dbo.study_groups_employees.study_group_id) AS employee_count, dbo.study_groups.id AS study_group_id
+FROM            dbo.study_groups INNER JOIN
+                         dbo.teachers ON dbo.study_groups.teacher_id = dbo.teachers.id LEFT OUTER JOIN
+                         dbo.study_groups_employees ON dbo.study_groups.id = dbo.study_groups_employees.study_group_id
+GROUP BY dbo.study_groups.study_group_name, dbo.teachers.fio, dbo.study_groups.id
 
-INSERT INTO teachers VALUES(N'Калинин А.М.','kalinin@yandex.ru')
-                           (N'Бакунин А.Ф.','baka@gmail.ru')
-						   (N'Никулин Е.О.', 'niku@mail.ru'
 
-INSERT INTO organizations VALUES(N'OOO Рога и Копыта','1234567890',1)
-                                (N'ООО Копыта и Рога','6789012345',2)
-						        (N'ООО ЧАППИ', '6789067890',3)
-                                (N'ООО ааа','6789267391',1)
+go
+CREATE VIEW organizations_employee_groups AS
+SELECT    dbo.employees.FIO, dbo.organizations.organization_name, dbo.employees.id AS employee_id, dbo.study_groups_employees.study_group_id
+FROM            dbo.employees INNER JOIN
+                         dbo.organizations ON dbo.employees.organization_id = dbo.organizations.id INNER JOIN
+                         dbo.study_groups_employees ON dbo.employees.id = dbo.study_groups_employees.employee_id
 
-INSERT INTO employees VALUES(N'Пучков Д.Ю.', 1)
-                            (N'Мешков А.М.', 2)
-							(N'Чаушин Л.К.', 3)
+go
+INSERT INTO teachers VALUES(N'Калинин А.М.','kalinin@yandex.ru'),
+                           (N'Бакунин А.Ф.','baka@gmail.ru'),
+						   (N'Никулин Е.О.', 'niku@mail.ru');
+
+INSERT INTO organizations VALUES(N'OOO Рога и Копыта','1234567890',1),
+                                (N'ООО Копыта и Рога','6789012345',2),
+						        (N'ООО ЧАППИ', '6789067890',3),
+                                (N'ООО ааа','6789267391',1);
+
+INSERT INTO employees VALUES(N'Пучков Д.Ю.', 1),
+                            (N'Мешков А.М.', 2),
+							(N'Чаушин Л.К.', 3);
 
 INSERT INTO employees VALUES(N'Аверин Е.Ф',4),
 							(N'Шукшин М.С',4),
-							(N'Лиходей Ю.Н.',1)
+							(N'Лиходей Ю.Н.',1);
 							
-INSERT INTO courses VALUES(N'Токарь')
-                          (N'Junior frontend 100k')
-						  (N'Рыболовец')
+INSERT INTO courses VALUES(N'Токарь'),
+                          (N'Junior frontend 100k'),
+						  (N'Рыболовец');
 
+go
 --Делает выборку : Группа-преподаватель-количество студентов
 CREATE PROCEDURE SelectGroupsTeachersAndStudentCount AS  --- 1 view
 SELECT * FROM groups_view 
 
+go
 CREATE PROCEDURE SelectTeachers AS --- 2.1 view
 SELECT * FROM teachers
 
+go
 CREATE PROCEDURE AddNewStudyGroup 
 @groupName NVARCHAR(50),
 @teacherId INT
 AS
 INSERT INTO study_groups VALUES(@groupName, @teacherId,NULL) --- 2.2
 
+go
 -- Возвращает название группы, id, фио учителя и его id
 CREATE PROCEDURE GetGroupNameAndGroupTeacher --- 3.1
 @groupId INT
 AS
 	SELECT study_group_name, fio,study_groups.id as study_group_id, teacher_id FROM study_groups INNER JOIN teachers ON teacher_id = teachers.id WHERE study_groups.id =@groupId
 
+go
 CREATE PROCEDURE UpdateGroupName  --3.2
 	@updatedGroupId INT,
 	@newStudyGroupName NVARCHAR(50)
@@ -86,12 +107,14 @@ UPDATE study_groups
 SET study_group_name = @newStudyGroupName
 WHERE id = @updatedGroupId
 
+go
 -- Вывод данных: Студент-Организация для определённой группы
 CREATE PROCEDURE SelectEmployeesAndOrgNameByGroupId --3.3
 	@studyGroupId INT
 	AS
 	SELECT * FROM organizations_employee_groups WHERE study_group_id = @studyGroupId
 	
+go
 CREATE PROCEDURE RemoveEmployeeFromStudyGroup  ---3.4
 	@employeeId INT,
 	@studyGroupId INT
@@ -99,20 +122,20 @@ AS
 DELETE FROM study_groups_employees
 WHERE employee_id = @employeeId AND study_group_id = @studyGroupId 
 
-
+go
 CREATE PROCEDURE AddEmployeeToStudyGroup --4.1
 @employeeId INT,
 @studyGroupId INT
 AS
 INSERT INTO study_groups_employees VALUES(@studyGroupId,@employeeId)
 
-
+go
 CREATE PROCEDURE GetOrganizationsAttachedToTeacher -- 
 @teacherId INT
 AS
 SELECT * FROM organizations WHERE teacher_id = @teacherId
-SELECT * FROM study_groups_employees
-USE studydb
+
+go
 CREATE PROCEDURE GetEmployeesAttachedToOrganization
 @orgId INT,
 @studyGroupId INT
