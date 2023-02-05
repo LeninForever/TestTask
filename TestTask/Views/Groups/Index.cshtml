@@ -1,0 +1,44 @@
+﻿@model List<TestTask.DAL.GroupsView>
+
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <title>Список групп</title>
+</head>
+
+<body>
+<div class="container mt-3">
+    <h2>Учебные группы</h2>
+    <table class="table table-bordered caption-top">
+        <caption>
+            <b>Учебные группы</b>
+        </caption>
+        <thead>
+        <tr>
+            <th scope="col">Преподаватель</th>
+            <th scope="col">Группа</th>
+            <th scope="col">Количество студентов</th>
+            <th scope="col"></th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var group in @Model)
+        {
+            <tr>
+                <td>@group.TeacherFio</td>
+                <td>@group.StudyGroupName</td>
+                <td>@group.EmployeeCount</td>
+                <td>@Html.ActionLink("Редактировать", "EditGroup", new { studyGroupId = group.StudyGroupId })</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+
+    @Html.RouteLink("Добавить новую группу", "Default", new { action = "AddNewGroup" }, new
+    {
+        @class = "btn btn-primary"
+    })
+</div>
+</body>
+</html>

@@ -1,0 +1,71 @@
+﻿@model TestTask.DAL.StudyGroupTeacher
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>title</title>
+</head>
+<body>
+<div class="container mt-3">
+    <h2>Добавить студента в учебную группу</h2>
+    <div class="navigation__links mt-3">
+        <span> @Html.RouteLink("Учебные группы", new { controller = "Groups", action = "Index" }) / Добавить студента в учебную группу</span>
+    </div>
+
+    <div class="container mt-4" id="study__group__info">
+        <span>Учебная группа: <b>@ViewBag.StudyGroupTeacher.StudyGroupName</b></span>
+    </div>
+
+    <div class="container mt-1" id="teacher__info">
+        <span>Преподаватель: <b>@ViewBag.StudyGroupTeacher.Fio</b></span>
+    </div>
+
+    <div class="container mt-4" id="employee_info">
+       
+        <form method="post" class="col-6">
+            <label for="organizations__select">Организация</label>
+            <select class="form-select mb-2" name="organizationId" id="organizations__select">
+                @foreach (var organization in ViewBag.Organizations)
+                {
+                    <option value="@organization.Id">@organization.OrganizationName</option>
+                }
+            </select>
+         
+            <partial name="~/Views/Employee/GetEmployeesAttachedToOrganization.cshtml"/>
+          
+            <input type="submit" class="btn btn-outline-primary mt-3" value="Добавить"/>
+            
+        </form>
+    </div>
+</div>
+</body>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function () {
+            $('#organizations__select').change(function () {
+                let text = $( '#organizations__select option:selected')[0].value
+                $.ajax({
+                    type: 'POST',
+                    url: '/Employee/GetEmployeesAttachedToOrganization',
+                    data:{orgId : text,
+                          studyGroupId: @ViewBag.StudyGroupTeacher.StudyGroupId},
+                      success:function(r) {
+                                
+                                $('#employees__select').html(r);
+                            },
+                            error:function(xhr, status, error) {           
+                                        let err =  xhr.responseText;
+                                        alert(err.message);
+                                    }
+                });
+                
+            });
+            const e = new Event("change");
+            const element = document.querySelector('#organizations__select')
+            element.dispatchEvent(e);
+});   
+ 
+    </script>
+
+</html>

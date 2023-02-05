@@ -1,0 +1,68 @@
+﻿@model TestTask.DAL.StudyGroupTeacher
+
+
+<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+    <title>Редактирование</title>
+</head>
+<body>
+<div class="container mt-3">
+    <h2>Редактировать учебную группу</h2>
+    <div class="navigation__links my-4">
+       <span> @Html.RouteLink("Учебные группы", new { controller = "Groups", action = "Index" }) / Редактировать учебную группу</span>
+    </div>
+
+    <div class="container my-2" id="group__name__editing__section">
+        
+        <div id="group__info__container">
+              <h6>Преподаватель: <b>@Model.Fio</b></h6>
+            <form method="post" class="col-6">
+                <label for="studyGroupName" asp-for="StudyGroupName">Название учебной группы</label>
+                <input type="text" class="form-control" name="studyGroupName" value="@Model.StudyGroupName" asp-for="StudyGroupName">
+                <span asp-validation-for="StudyGroupName"></span>
+                <input type="submit" class="btn btn-outline-primary mt-3" value="Сохранить изменения"/>
+            </form>
+        </div>
+    </div>
+    <div id="employees__section" class="mt-4">
+        <table class="table table-bordered caption-top">
+            <caption>
+                <b>Список студентов</b>
+            </caption>
+            <thead>
+            <tr>
+                <th>Студент</th>
+                <th>Организация</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var employee in ViewBag.EmployeesOrganizations)
+            {
+                <tr>
+                    <td>@employee.Fio</td>
+                    <td>@employee.OrganizationName</td>
+                    <td>
+                        @Html.ActionLink("Удалить из группы", "DeleteStudentFromGroup",
+                            new { employeeId = employee.EmployeeId, employee.StudyGroupId })
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+    @Html.ActionLink("Добавить студента", "AddStudentToGroup", new
+    {
+        StudyGroupName = Model.StudyGroupName,
+        Fio = Model.Fio,
+        StudyGroupId = Model.StudyGroupId,
+        TeacherId = Model.TeacherId
+    }, new { @class = "btn btn-primary"})
+</div>
+</body>
+<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.5.1.min.js"></script>
+<script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.17.0/jquery.validate.min.js"></script>
+<script src="https://ajax.aspnetcdn.com/ajax/jquery.validation.unobtrusive/3.2.10/jquery.validate.unobtrusive.min.js"></script>
+</html>

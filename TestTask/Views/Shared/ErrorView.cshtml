@@ -1,0 +1,15 @@
+﻿@model ErrorDataObject
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Ошибка!</title>
+</head>
+<body>
+<div>
+    <h2>@Model.Message</h2>
+    @Html.RouteLink("Назад", new { controller = Model.ControllerName, action = Model.ActionName });
+</div>
+</body>
+</html>
