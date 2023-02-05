@@ -54,29 +54,29 @@ FROM            dbo.employees INNER JOIN
                          dbo.study_groups_employees ON dbo.employees.id = dbo.study_groups_employees.employee_id
 
 go
-INSERT INTO teachers VALUES(N'Калинин А.М.','kalinin@yandex.ru'),
-                           (N'Бакунин А.Ф.','baka@gmail.ru'),
-						   (N'Никулин Е.О.', 'niku@mail.ru');
+INSERT INTO teachers VALUES(N'Kalinin A.M.','kalinin@yandex.ru'),
+                           (N'Bakunin A.F.','baka@gmail.ru'),
+						   (N'Nikulin E.O.', 'niku@mail.ru');
 
-INSERT INTO organizations VALUES(N'OOO Рога и Копыта','1234567890',1),
-                                (N'ООО Копыта и Рога','6789012345',2),
-						        (N'ООО ЧАППИ', '6789067890',3),
-                                (N'ООО ааа','6789267391',1);
+INSERT INTO organizations VALUES(N'OOO Roga i Kopyita','1234567890',1),
+                                (N'OOO Kopyita i Roga','6789012345',2),
+						        (N'OOO Chappi', '6789067890',3),
+                                (N'OOO AAA','6789267391',1);
 
-INSERT INTO employees VALUES(N'Пучков Д.Ю.', 1),
-                            (N'Мешков А.М.', 2),
-							(N'Чаушин Л.К.', 3);
+INSERT INTO employees VALUES(N'Puchkov D.Y.', 1),
+                            (N'Meshkov A.M.', 2),
+							(N'Chaushin L.K.', 3);
 
-INSERT INTO employees VALUES(N'Аверин Е.Ф',4),
-							(N'Шукшин М.С',4),
-							(N'Лиходей Ю.Н.',1);
+INSERT INTO employees VALUES(N'Averin E.F',4),
+							(N'Shukshin M.C',4),
+							(N'Lixodei Y.N.',1);
 							
-INSERT INTO courses VALUES(N'Токарь'),
+INSERT INTO courses VALUES(N'Tokar'),
                           (N'Junior frontend 100k'),
-						  (N'Рыболовец');
+						  (N'FishTaker');
 
 go
---Делает выборку : Группа-преподаватель-количество студентов
+--Make selection: Group-Teacher-student count
 CREATE PROCEDURE SelectGroupsTeachersAndStudentCount AS  --- 1 view
 SELECT * FROM groups_view 
 
@@ -92,7 +92,7 @@ AS
 INSERT INTO study_groups VALUES(@groupName, @teacherId,NULL) --- 2.2
 
 go
--- Возвращает название группы, id, фио учителя и его id
+-- Return group name, id, teacher's fio and his id
 CREATE PROCEDURE GetGroupNameAndGroupTeacher --- 3.1
 @groupId INT
 AS
@@ -108,7 +108,7 @@ SET study_group_name = @newStudyGroupName
 WHERE id = @updatedGroupId
 
 go
--- Вывод данных: Студент-Организация для определённой группы
+-- Make selection: Employee-Organizaton for current group
 CREATE PROCEDURE SelectEmployeesAndOrgNameByGroupId --3.3
 	@studyGroupId INT
 	AS
